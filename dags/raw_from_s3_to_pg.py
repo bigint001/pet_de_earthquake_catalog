@@ -33,7 +33,7 @@ SHORT_DESCRIPTION = "SHORT DESCRIPTION"
 
 args = {
     "owner": OWNER,
-    "start_date": pendulum.datetime(2025, 5, 1, tz="Europe/Moscow"),
+    "start_date": pendulum.datetime(2026, 5, 1, tz="Europe/Kyiv"),
     "catchup": True,
     "retries": 3,
     "retry_delay": pendulum.duration(hours=1),
@@ -150,13 +150,15 @@ with DAG(
     )
 
     sensor_on_raw_layer = ExternalTaskSensor(
-        task_id="sensor_on_raw_layer",
-        external_dag_id="raw_from_api_to_s3",
-        allowed_states=["success"],
-        mode="reschedule",
-        timeout=360000,  # длительность работы сенсора
-        poke_interval=60,  # частота проверки
-    )
+    task_id="sensor_on_raw_layer",
+    external_dag_id="raw_from_api_to_s3",
+    external_task_id="get_and_transfer_api_data_to_s3",
+    execution_delta=pendulum.duration(days=0),
+    allowed_states=["success"],
+    mode="reschedule",
+    poke_interval=60,
+    timeout=3600 * 10,
+)
 
     get_and_transfer_raw_data_to_ods_pg = PythonOperator(
         task_id="get_and_transfer_raw_data_to_ods_pg",
