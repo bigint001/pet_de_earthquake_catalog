@@ -62,7 +62,7 @@ with DAG(
         conn_id=PG_CONNECT,
         autocommit=True,
         sql=f"""
-        DROP TABLE IF EXISTS stg."tmp_{TARGET_TABLE}_{{{{ data_interval_start.format('YYYY-MM-DD') }}}}"
+        DROP TABLE IF EXISTS stg."tmp_{TARGET_TABLE}_{{ data_interval_start.strftime('%Y-%m-%d') }}"
         """,
     )
 
